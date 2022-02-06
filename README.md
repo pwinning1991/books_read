@@ -1,4 +1,5 @@
-# This is just a program to get use to writing apis in golang
+# Books Read
+## This is just a program to get use to writing apis in golang
 ## TODO
 + Add testing
 + Add sorting and querying endpoints
