@@ -37,32 +37,52 @@ func addNewBook(c *gin.Context) {
 
 }
 
+func findByTitle(title string) int {
+	for k, v := range books {
+		if strings.EqualFold(title, v.Title) {
+			return k
+		}
+	}
+
+	return -1
+}
+
+func returnOneBook(c *gin.Context) {
+	title := c.Param("title")
+	idx := findByTitle(title)
+	if idx == -1 {
+		msg := fmt.Sprintf("Book %s not found", title)
+		c.JSON(http.StatusNotFound, gin.H{"message": msg})
+		return
+	} else {
+		c.IndentedJSON(http.StatusOK, books[idx])
+	}
+}
+
 func patchBook(c *gin.Context) {
 	title := c.Param("title")
-	for _, v := range books {
-		if strings.EqualFold(title, v.Title) {
-			v.Number_of_times_read++
-			msg := fmt.Sprintf("Updating book and adding one to count for  %s", v.Title)
-			c.JSON(http.StatusAccepted, gin.H{"message": msg})
-		} else {
-			msg := fmt.Sprintf("Book %s not found", v.Title)
-			c.JSON(http.StatusNotFound, gin.H{"message": msg})
-		}
-
+	idx := findByTitle(title)
+	if idx == -1 {
+		msg := fmt.Sprintf("Book %s not found", title)
+		c.JSON(http.StatusNotFound, gin.H{"message": msg})
+		return
+	} else {
+		books[idx].Number_of_times_read++
+		msg := fmt.Sprintf("Updating book and adding one to count for %s", books[idx].Title)
+		c.JSON(http.StatusAccepted, gin.H{"message": msg})
 	}
 }
 
 func healthCheck(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "ok"})
-
 }
 
 func main() {
 	r := gin.Default()
 	r.GET("/api/health", healthCheck)
 	r.GET("/api/books", returnAllBooks)
+	r.GET("/api/book/:title", returnOneBook)
 	r.POST("/api/book", addNewBook)
 	r.PATCH("/api/book/:title", patchBook)
 	r.Run(port)
-
 }
