@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/csv"
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -27,19 +24,19 @@ var books = []Book{
 var port string = ":8080"
 var csvFile string
 
-func readCsvFile(path string) ([][]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return [][]string{}, err
-	}
-	defer file.Close()
-	lines, err := csv.NewReader(file).ReadAll()
-	if err != nil {
-		return [][]string{}, err
-	}
+//func readCsvFile(path string) ([][]string, error) {
+//file, err := os.Open(path)
+//if err != nil {
+//return [][]string{}, err
+//}
+//defer file.Close()
+//lines, err := csv.NewReader(file).ReadAll()
+//if err != nil {
+//return [][]string{}, err
+//}
 
-	return lines, nil
-}
+//return lines, nil
+//}
 
 func returnAllBooks(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, books)
@@ -98,23 +95,23 @@ func healthCheck(c *gin.Context) {
 
 func main() {
 	flag.StringVar(&port, "port", ":8080", "The port which the router binds to")
-	flag.StringVar(&csvFile, "csvFile", "", "The path to a csv file to initialize the db")
+	//flag.StringVar(&csvFile, "csvFile", "", "The path to a csv file to initialize the db")
 	flag.Parse()
 
-	lines, err := readCsvFile(csvFile)
-	if err != nil {
-		log.Printf("Reading csvfile %s returned an error: %v", csvFile, err)
-	}
-	for _, line := range lines {
-		book := Book{
-			Title:                line[0],
-			Number_of_times_read: line[1],
-			Type_of_book:         line[2],
-			Author:               line[3],
-		}
+	//lines, err := readCsvFile(csvFile)
+	//if err != nil {
+	//log.Printf("Reading csvfile %s returned an error: %v", csvFile, err)
+	//}
+	//for _, line := range lines {
+	//book := Book{
+	//Title:                line[0],
+	//Number_of_times_read: line[1],
+	//Type_of_book:         line[2],
+	//Author:               line[3],
+	//}
 
-		books = append(books, book)
-	}
+	//books = append(books, book)
+	//}
 	r := gin.Default()
 	r.GET("/api/health", healthCheck)
 	r.GET("/api/books", returnAllBooks)
